@@ -149,6 +149,16 @@ export default function ExamSession() {
         .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .submit-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 10px; padding: 0.55rem 1.1rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; white-space: nowrap; }
         .submit-btn:hover { opacity: 0.85; }
+        .session-layout { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; min-height: calc(100vh - 72px); }
+        .session-sidebar { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.85rem 1rem; background: #0d0d14; }
+        .session-legend { display: flex; flex-direction: row; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap; }
+        .session-main { flex: 1; padding: 1.25rem 1rem; max-width: 720px; width: 100%; }
+        @media (min-width: 768px) {
+          .session-layout { flex-direction: row; }
+          .session-sidebar { width: 200px; flex-shrink: 0; border-bottom: none; border-right: 1px solid rgba(255,255,255,0.05); padding: 1.25rem 1rem; min-height: calc(100vh - 72px); }
+          .session-legend { flex-direction: column; gap: 0.35rem; margin-top: 1.25rem; }
+          .session-main { padding: 2rem 1.5rem; }
+        }
       `}</style>
 
       {/* Top bar */}
@@ -173,33 +183,21 @@ export default function ExamSession() {
         </div>
       </header>
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', gap: 0, minHeight: 'calc(100vh - 72px)' }}>
+      <div className="session-layout">
 
         {/* Sidebar - question grid */}
-        <div style={{ width: 200, flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem 1rem', background: '#0d0d14' }}>
+        <aside className="session-sidebar">
           <p style={{ fontSize: '0.7rem', fontWeight: 600, color: '#374151', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.85rem' }}>Questions</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.35rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(30px, 1fr))', gap: '0.35rem' }}>
             {questions.map((q, i) => (
               <button
                 key={q.id}
                 onClick={() => setCurrentIndex(i)}
                 className="q-nav-btn"
                 style={{
-                  borderColor: i === currentIndex
-                    ? '#6366f1'
-                    : answers[q.id]
-                    ? 'rgba(34,197,94,0.4)'
-                    : 'rgba(255,255,255,0.06)',
-                  background: i === currentIndex
-                    ? '#6366f1'
-                    : answers[q.id]
-                    ? 'rgba(34,197,94,0.1)'
-                    : 'transparent',
-                  color: i === currentIndex
-                    ? 'white'
-                    : answers[q.id]
-                    ? '#4ade80'
-                    : '#374151',
+                  borderColor: i === currentIndex ? '#6366f1' : answers[q.id] ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.06)',
+                  background: i === currentIndex ? '#6366f1' : answers[q.id] ? 'rgba(34,197,94,0.1)' : 'transparent',
+                  color: i === currentIndex ? 'white' : answers[q.id] ? '#4ade80' : '#374151',
                 }}
               >
                 {i + 1}
@@ -208,7 +206,7 @@ export default function ExamSession() {
           </div>
 
           {/* Legend */}
-          <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+          <div className="session-legend">
             {[
               { color: '#6366f1', label: 'Current' },
               { color: '#4ade80', label: 'Answered' },
@@ -220,10 +218,10 @@ export default function ExamSession() {
               </div>
             ))}
           </div>
-        </div>
+        </aside>
 
         {/* Main question area */}
-        <main style={{ flex: 1, padding: '2rem 1.5rem', maxWidth: 720 }}>
+        <main className="session-main">
           {/* Question counter */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
