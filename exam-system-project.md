@@ -1,6 +1,6 @@
 # 🎓 Online Exam System — Project Documentation
 
-**Project Name:** Online Exam System (Working Title: *ExamFlow*)
+**Project Name:** Online Exam System (Working Title: *Proshno*)
 **Stack:** React + Vite, Firebase Auth, Firestore, No backend server
 **Designed for:** Coaching centers, schools, or individual educators
 **Developer Background:** BUET CSE student | Radiance Coaching Center, Tongi, Gazipur
@@ -9,7 +9,7 @@
 
 ## 📌 Project Overview
 
-ExamFlow is a fully client-side web application that enables educators to create structured exams organized by **Subject → Chapter → Exam**, and allows students to attend those exams in either **Practice Mode** or **Exam Mode** — all without any backend server. Firebase handles authentication for admin and Firestore handles all persistent data.
+Proshno is a fully client-side web application that enables educators to create structured exams organized by **Subject → Chapter → Exam**, and allows students to attend those exams in either **Practice Mode** or **Exam Mode** — all without any backend server. Firebase handles authentication for admin and Firestore handles all persistent data.
 
 Students do not need to register or log in. They can access all exams publicly, attend them unlimited times, and optionally save their results locally for up to 30 days.
 

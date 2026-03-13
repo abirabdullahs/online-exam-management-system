@@ -16,7 +16,7 @@ export default function AdminNav() {
         <div className="flex justify-between h-14 items-center">
           <div className="flex gap-6">
             <Link to="/admin/dashboard" className="font-semibold hover:text-indigo-200">
-              ExamFlow
+              Proshno
             </Link>
             <Link to="/admin/subjects" className="hover:text-indigo-200">Subjects</Link>
             <Link to="/admin/chapters" className="hover:text-indigo-200">Chapters</Link>

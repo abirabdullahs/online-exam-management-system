@@ -15,6 +15,7 @@ import Exams from './pages/admin/Exams';
 import ExamNew from './pages/admin/ExamNew';
 import ExamEdit from './pages/admin/ExamEdit';
 import QuestionManager from './pages/admin/QuestionManager';
+import BulkUpload from './pages/admin/BulkUpload';
 
 export default function App() {
   return (
@@ -48,6 +49,8 @@ export default function App() {
         <Route path="/admin/exams/:examId/questions" element={
           <ProtectedRoute><QuestionManager /></ProtectedRoute>
         } />
+
+        <Route path="/admin/bulk-upload" element={<ProtectedRoute><BulkUpload /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

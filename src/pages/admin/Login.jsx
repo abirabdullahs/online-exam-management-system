@@ -28,7 +28,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h1 className="text-2xl font-bold text-center text-indigo-600 mb-2">ExamFlow Admin</h1>
+          <h1 className="text-2xl font-bold text-center text-indigo-600 mb-2">Proshno Admin</h1>
           <p className="text-slate-600 text-center mb-6">Sign in to manage exams</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">

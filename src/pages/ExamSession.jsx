@@ -34,10 +34,7 @@ export default function ExamSession() {
     let cancelled = false;
     (async () => {
       const examData = await getExamByCode(examCode);
-      if (!examData || cancelled) {
-        navigate('/');
-        return;
-      }
+      if (!examData || cancelled) { navigate('/'); return; }
       const allQ = await getQuestions(examData.id);
       const qs = allQ.slice(0, Math.min(questionCount, allQ.length));
       setExam(examData);
@@ -61,11 +58,7 @@ export default function ExamSession() {
         } else {
           setTimeLeft(examData.totalTimeSeconds);
           setTimerStart(Date.now());
-          sessionStorage.setItem(`${SESSION_KEY}_${examCode}`, JSON.stringify({
-            startTime: Date.now(),
-            answers: {},
-            currentIndex: 0
-          }));
+          sessionStorage.setItem(`${SESSION_KEY}_${examCode}`, JSON.stringify({ startTime: Date.now(), answers: {}, currentIndex: 0 }));
         }
       }
       if (!cancelled) setLoading(false);
@@ -75,9 +68,7 @@ export default function ExamSession() {
 
   useEffect(() => {
     if (!isPractice && timeLeft !== null && timeLeft > 0 && !submitted) {
-      const id = setInterval(() => {
-        setTimeLeft(prev => prev <= 0 ? 0 : prev - 1);
-      }, 1000);
+      const id = setInterval(() => setTimeLeft(prev => prev <= 0 ? 0 : prev - 1), 1000);
       return () => clearInterval(id);
     }
   }, [isPractice, submitted, timeLeft]);
@@ -85,30 +76,20 @@ export default function ExamSession() {
   const handleSubmitInternal = useCallback(() => {
     if (submitted || !exam || !questions.length) return;
     setSubmitted(true);
-
     (async () => {
       const [subjects, chapters] = await Promise.all([getSubjects(), getChapters()]);
       const subjectName = subjects.find(s => s.id === exam.subjectId)?.name || '';
       const chapterName = chapters.find(c => c.id === exam.chapterId)?.name || '';
-
       const score = calculateScore(answers, questions, exam.marksPerCorrect, exam.negativeMarks);
       const result = {
-        examId: exam.id,
-        examCode: exam.examCode,
-        examTitle: exam.title,
-        subjectName,
-        chapterName,
-        mode,
+        examId: exam.id, examCode: exam.examCode, examTitle: exam.title,
+        subjectName, chapterName, mode,
         attemptedAt: new Date().toISOString(),
-        questionsAttempted: questions.length,
-        totalQuestions: questions.length,
+        questionsAttempted: questions.length, totalQuestions: questions.length,
         score,
         answers: questions.map(q => ({
-          questionId: q.id,
-          questionText: q.questionText,
-          questionImageUrl: q.questionImageUrl,
-          options: q.options,
-          correctOption: q.correctOption,
+          questionId: q.id, questionText: q.questionText, questionImageUrl: q.questionImageUrl,
+          options: q.options, correctOption: q.correctOption,
           selectedOption: answers[q.id] ?? null,
           isCorrect: answers[q.id] ? answers[q.id] === q.correctOption : false,
           timeTaken: 0
@@ -121,18 +102,12 @@ export default function ExamSession() {
   }, [submitted, answers, questions, exam, examCode, navigate]);
 
   useEffect(() => {
-    if (!isPractice && timeLeft === 0 && !submitted) {
-      handleSubmitInternal();
-    }
+    if (!isPractice && timeLeft === 0 && !submitted) handleSubmitInternal();
   }, [timeLeft, isPractice, submitted, handleSubmitInternal]);
 
   useEffect(() => {
     if (exam && mode === 'exam' && timerStart) {
-      sessionStorage.setItem(`${SESSION_KEY}_${examCode}`, JSON.stringify({
-        startTime: timerStart,
-        answers,
-        currentIndex
-      }));
+      sessionStorage.setItem(`${SESSION_KEY}_${examCode}`, JSON.stringify({ startTime: timerStart, answers, currentIndex }));
     }
   }, [answers, currentIndex, examCode, exam, mode, timerStart]);
 
@@ -144,22 +119,15 @@ export default function ExamSession() {
 
   const handleClear = useCallback((qId) => {
     if (submitted) return;
-    setAnswers(prev => {
-      const next = { ...prev };
-      delete next[qId];
-      return next;
-    });
-    setShowFeedback(prev => {
-      const next = { ...prev };
-      delete next[qId];
-      return next;
-    });
+    setAnswers(prev => { const n = { ...prev }; delete n[qId]; return n; });
+    setShowFeedback(prev => { const n = { ...prev }; delete n[qId]; return n; });
   }, [submitted]);
 
   if (loading || !exam) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-10 h-10 border-2 border-indigo-600 border-t-transparent rounded-full" />
+      <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, border: '2px solid rgba(99,102,241,0.2)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -167,47 +135,110 @@ export default function ExamSession() {
   const currentQ = questions[currentIndex];
   if (!currentQ) return null;
 
+  const answeredCount = Object.keys(answers).length;
+  const progressPct = (answeredCount / questions.length) * 100;
+
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 px-4 py-3 flex justify-between items-center">
-        <span className="font-medium">{exam.title}</span>
-        <div className="flex items-center gap-4">
-          {!isPractice && timeLeft !== null && (
-            <Timer seconds={timeLeft} danger={timeLeft <= 60} />
-          )}
-          <button
-            onClick={() => confirm('Submit exam?') && handleSubmitInternal()}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm"
-          >
-            Submit
-          </button>
+    <div style={{ minHeight: '100vh', background: '#0a0a0f', fontFamily: "'Sora', sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .q-nav-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid; font-size: 0.72rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: inherit; }
+        .nav-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #64748b; border-radius: 10px; padding: 0.6rem 1.25rem; font-size: 0.85rem; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+        .nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.07); color: #94a3b8; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .submit-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 10px; padding: 0.55rem 1.1rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; white-space: nowrap; }
+        .submit-btn:hover { opacity: 0.85; }
+      `}</style>
+
+      {/* Top bar */}
+      <header style={{ background: '#0d0d14', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '0.75rem 1rem', position: 'sticky', top: 0, zIndex: 40 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 600, color: '#e2e8f0', fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '30ch' }}>{exam.title}</div>
+            <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '0.1rem' }}>
+              {isPractice ? '● Practice Mode' : '● Exam Mode'} · {answeredCount}/{questions.length} answered
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {!isPractice && timeLeft !== null && <Timer seconds={timeLeft} danger={timeLeft <= 60} />}
+            <button onClick={() => { if (window.confirm('Submit exam?')) handleSubmitInternal(); }} className="submit-btn">
+              Submit
+            </button>
+          </div>
+        </div>
+        {/* Progress bar */}
+        <div style={{ maxWidth: 1100, margin: '0.5rem auto 0', height: 2, background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
+          <div style={{ height: '100%', width: `${progressPct}%`, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)', borderRadius: 2, transition: 'width 0.3s' }} />
         </div>
       </header>
 
-      <div className="flex">
-        <aside className="w-48 p-4 border-r bg-white min-h-[calc(100vh-56px)]">
-          <p className="text-sm text-slate-600 mb-2">Questions</p>
-          <div className="grid grid-cols-5 gap-1">
+      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', gap: 0, minHeight: 'calc(100vh - 72px)' }}>
+
+        {/* Sidebar - question grid */}
+        <aside style={{ width: 200, flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem 1rem', background: '#0d0d14' }}>
+          <p style={{ fontSize: '0.7rem', fontWeight: 600, color: '#374151', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.85rem' }}>Questions</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.35rem' }}>
             {questions.map((q, i) => (
               <button
                 key={q.id}
                 onClick={() => setCurrentIndex(i)}
-                className={`w-8 h-8 rounded text-sm ${
-                  i === currentIndex
-                    ? 'bg-indigo-600 text-white'
+                className="q-nav-btn"
+                style={{
+                  borderColor: i === currentIndex
+                    ? '#6366f1'
                     : answers[q.id]
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-slate-100 text-slate-600'
-                }`}
+                    ? 'rgba(34,197,94,0.4)'
+                    : 'rgba(255,255,255,0.06)',
+                  background: i === currentIndex
+                    ? '#6366f1'
+                    : answers[q.id]
+                    ? 'rgba(34,197,94,0.1)'
+                    : 'transparent',
+                  color: i === currentIndex
+                    ? 'white'
+                    : answers[q.id]
+                    ? '#4ade80'
+                    : '#374151',
+                }}
               >
                 {i + 1}
               </button>
             ))}
           </div>
+
+          {/* Legend */}
+          <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            {[
+              { color: '#6366f1', label: 'Current' },
+              { color: '#4ade80', label: 'Answered' },
+              { color: '#374151', label: 'Skipped' },
+            ].map(l => (
+              <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span style={{ width: 8, height: 8, borderRadius: 2, background: l.color, flexShrink: 0 }} />
+                <span style={{ fontSize: '0.68rem', color: '#374151' }}>{l.label}</span>
+              </div>
+            ))}
+          </div>
         </aside>
 
-        <main className="flex-1 p-8 max-w-2xl">
-          <p className="text-slate-500 text-sm mb-4">Question {currentIndex + 1} of {questions.length}</p>
+        {/* Main question area */}
+        <main style={{ flex: 1, padding: '2rem 1.5rem', maxWidth: 720 }}>
+          {/* Question counter */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(139,92,246,0.2))', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc', fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.65rem', borderRadius: 6 }}>
+                Q{currentIndex + 1}
+              </span>
+              <span style={{ color: '#374151', fontSize: '0.8rem' }}>of {questions.length}</span>
+            </div>
+            {isPractice && showFeedback[currentQ.id] && (
+              <span style={{ fontSize: '0.72rem', color: '#4ade80', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', padding: '0.2rem 0.6rem', borderRadius: 6 }}>
+                Answer revealed
+              </span>
+            )}
+          </div>
+
           <QuestionDisplay
             question={currentQ}
             selectedOption={answers[currentQ.id]}
@@ -216,20 +247,23 @@ export default function ExamSession() {
             showFeedback={showFeedback[currentQ.id]}
             mode={mode}
           />
-          <div className="flex gap-4 mt-8">
+
+          {/* Navigation buttons */}
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem' }}>
             <button
               onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
               disabled={currentIndex === 0}
-              className="px-4 py-2 border border-slate-300 rounded-lg disabled:opacity-50"
+              className="nav-btn"
             >
-              Previous
+              ← Previous
             </button>
             <button
               onClick={() => setCurrentIndex(i => Math.min(questions.length - 1, i + 1))}
               disabled={currentIndex === questions.length - 1}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg disabled:opacity-50"
+              className="nav-btn"
+              style={{ marginLeft: 'auto', background: currentIndex < questions.length - 1 ? 'rgba(99,102,241,0.1)' : undefined, borderColor: currentIndex < questions.length - 1 ? 'rgba(99,102,241,0.3)' : undefined, color: currentIndex < questions.length - 1 ? '#818cf8' : undefined }}
             >
-              Next
+              Next →
             </button>
           </div>
         </main>

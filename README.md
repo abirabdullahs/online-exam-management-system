@@ -1,4 +1,4 @@
-# ExamFlow — Online Exam Management System
+# Proshno — Online Exam Management System
 
 A full-stack web application for coaching centers, schools, and educators. Built with React + Vite, Firebase Auth, and Firestore. No backend server required.
 
