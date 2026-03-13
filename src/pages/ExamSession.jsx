@@ -176,7 +176,7 @@ export default function ExamSession() {
       <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', gap: 0, minHeight: 'calc(100vh - 72px)' }}>
 
         {/* Sidebar - question grid */}
-        <aside style={{ width: 200, flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem 1rem', background: '#0d0d14' }}>
+        <div style={{ width: 200, flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.05)', padding: '1.25rem 1rem', background: '#0d0d14' }}>
           <p style={{ fontSize: '0.7rem', fontWeight: 600, color: '#374151', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.85rem' }}>Questions</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.35rem' }}>
             {questions.map((q, i) => (
@@ -220,7 +220,7 @@ export default function ExamSession() {
               </div>
             ))}
           </div>
-        </aside>
+        </div>
 
         {/* Main question area */}
         <main style={{ flex: 1, padding: '2rem 1.5rem', maxWidth: 720 }}>

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, getCountFromServer, query, where, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
 // ─── paste your target examId here (or pass as prop) ───
@@ -71,6 +71,12 @@ export default function BulkUpload() {
         setUploadedCount(i + 1);
         setProgress(Math.round(((i + 1) / questions.length) * 100));
       }
+      // auto-update totalQuestions on the exam doc
+      const examRef = doc(db, 'exams', examId.trim());
+      const qQuery = query(collection(db, 'questions'), where('examId', '==', examId.trim()));
+      const snap = await getCountFromServer(qQuery);
+      await updateDoc(examRef, { totalQuestions: snap.data().count });
+
       setStatus('done');
     } catch (err) {
       setErrorMsg(err.message);
