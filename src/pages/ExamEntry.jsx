@@ -130,16 +130,57 @@ export default function ExamEntry() {
               <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.6rem', letterSpacing: '0.04em' }}>
                 QUESTIONS TO ATTEMPT
               </label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <input
-                  type="number"
-                  value={questionCount}
-                  onChange={(e) => { setQuestionCount(e.target.value); setAttemptAll(false); }}
-                  min={1}
-                  max={exam.totalQuestions}
-                  placeholder="e.g. 20"
-                  className="num-input"
-                />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* Slider */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#e2e8f0', fontWeight: 600 }}>
+                      {attemptAll ? exam.totalQuestions : parseInt(questionCount) || 0} questions
+                    </span>
+                    <span style={{ fontSize: '0.75rem', color: '#475569' }}>
+                      {attemptAll ? '100%' : Math.round(((parseInt(questionCount) || 0) / exam.totalQuestions) * 100)}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max={exam.totalQuestions}
+                    value={attemptAll ? exam.totalQuestions : (parseInt(questionCount) || 1)}
+                    onChange={(e) => { setQuestionCount(e.target.value); setAttemptAll(false); }}
+                    style={{
+                      width: '100%',
+                      height: '6px',
+                      borderRadius: '3px',
+                      background: 'rgba(99,102,241,0.2)',
+                      outline: 'none',
+                      WebkitAppearance: 'none',
+                      cursor: 'pointer',
+                    }}
+                  />
+                  <style>{`
+                    input[type="range"]::-webkit-slider-thumb {
+                      WebkitAppearance: none;
+                      appearance: none;
+                      width: 18px;
+                      height: 18px;
+                      borderRadius: 50%;
+                      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                      cursor: pointer;
+                      border: 2px solid rgba(99,102,241,0.3);
+                      boxShadow: 0 2px 8px rgba(99,102,241,0.25);
+                    }
+                    input[type="range"]::-moz-range-thumb {
+                      width: 18px;
+                      height: 18px;
+                      borderRadius: 50%;
+                      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                      cursor: pointer;
+                      border: 2px solid rgba(99,102,241,0.3);
+                      boxShadow: 0 2px 8px rgba(99,102,241,0.25);
+                    }
+                  `}</style>
+                </div>
+                {/* "Attempt All" checkbox */}
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                   <input
                     type="checkbox"
@@ -147,7 +188,7 @@ export default function ExamEntry() {
                     onChange={(e) => setAttemptAll(e.target.checked)}
                     className="attempt-all-check"
                   />
-                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>All {exam.totalQuestions} questions</span>
+                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>Attempt all {exam.totalQuestions} questions</span>
                 </label>
               </div>
             </div>

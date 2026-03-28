@@ -1,6 +1,6 @@
 import { RenderMath } from '../../utils/mathParser';
 
-export default function QuestionDisplay({ question, selectedOption, onSelect, onClear, showFeedback, mode }) {
+export default function QuestionDisplay({ question, selectedOption, onSelect, onClear, onSkip, showFeedback, mode, isLastQuestion }) {
   const isPractice = mode === 'practice';
   const showCorrect = isPractice && showFeedback;
 
@@ -132,18 +132,31 @@ export default function QuestionDisplay({ question, selectedOption, onSelect, on
         })}
       </div>
 
-      {/* Clear answer */}
-      {selectedOption && !showCorrect && (
-        <button
-          onClick={onClear}
-          style={{ marginTop: '0.85rem', fontSize: '0.78rem', color: '#475569', background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem 0', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-          onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
-          onMouseLeave={e => e.currentTarget.style.color = '#475569'}
-        >
-          <svg width="12" height="12" fill="none" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
-          Clear answer
-        </button>
-      )}
+      {/* Clear answer & Skip button */}
+      <div style={{ marginTop: '0.85rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        {selectedOption && !showCorrect && (
+          <button
+            onClick={onClear}
+            style={{ fontSize: '0.78rem', color: '#475569', background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem 0', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
+            onMouseLeave={e => e.currentTarget.style.color = '#475569'}
+          >
+            <svg width="12" height="12" fill="none" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+            Clear answer
+          </button>
+        )}
+        {!isLastQuestion && !showCorrect && (
+          <button
+            onClick={onSkip}
+            style={{ fontSize: '0.78rem', color: '#818cf8', background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem 0', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.3rem', marginLeft: 'auto' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#a5b4fc'}
+            onMouseLeave={e => e.currentTarget.style.color = '#818cf8'}
+          >
+            <svg width="12" height="12" fill="none" viewBox="0 0 12 12"><path d="M2 6h8M8 4l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            Skip
+          </button>
+        )}
+      </div>
     </div>
   );
 }
