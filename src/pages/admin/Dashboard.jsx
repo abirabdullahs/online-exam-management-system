@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminNav from '../../components/admin/AdminNav';
-import { getSubjects, getChapters, getExams } from '../../firebase/firestore';
+import { getSessions, getSubjects, getChapters, getExams } from '../../firebase/firestore';
 import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
@@ -12,13 +12,15 @@ export default function Dashboard() {
   useEffect(() => {
     async function load() {
       try {
-        const [subjects, chapters, exams] = await Promise.all([
+        const [sessions, subjects, chapters, exams] = await Promise.all([
+          getSessions(),
           getSubjects(),
           getChapters(),
           getExams()
         ]);
         const questionsSnap = await getDocs(collection(db, 'questions'));
         setStats({
+          sessions: sessions.length,
           subjects: subjects.length,
           chapters: chapters.length,
           exams: exams.length,
@@ -45,7 +47,8 @@ export default function Dashboard() {
   }
 
   const cards = [
-    { label: 'Subjects', value: stats.subjects, to: '/admin/subjects', bg: 'bg-indigo-50', border: 'border-indigo-100', text: 'text-indigo-600' },
+    { label: 'Sessions', value: stats.sessions, to: '/admin/sessions', bg: 'bg-indigo-50', border: 'border-indigo-100', text: 'text-indigo-600' },
+    { label: 'Subjects', value: stats.subjects, to: '/admin/subjects', bg: 'bg-blue-50', border: 'border-blue-100', text: 'text-blue-600' },
     { label: 'Chapters', value: stats.chapters, to: '/admin/chapters', bg: 'bg-purple-50', border: 'border-purple-100', text: 'text-purple-600' },
     { label: 'Exams', value: stats.exams, to: '/admin/exams', bg: 'bg-violet-50', border: 'border-violet-100', text: 'text-violet-600' },
     { label: 'Questions', value: stats.questions, to: '/admin/exams', bg: 'bg-fuchsia-50', border: 'border-fuchsia-100', text: 'text-fuchsia-600' }

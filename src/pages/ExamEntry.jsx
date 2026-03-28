@@ -44,6 +44,18 @@ export default function ExamEntry() {
     );
   }
 
+  if (!exam.isPublished) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', color: '#64748b' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>Exam not available</h1>
+          <p style={{ marginBottom: '1rem' }}>This exam is currently unavailable.</p>
+          <a href="/" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 600 }}>← Back to Exams</a>
+        </div>
+      </div>
+    );
+  }
+
   if (exam.totalQuestions === 0) {
     return (
       <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

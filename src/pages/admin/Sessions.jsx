@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react';
 import AdminNav from '../../components/admin/AdminNav';
-import SubjectForm from '../../components/admin/SubjectForm';
-import { getSessions, getSubjects, addSubject, updateSubject, deleteSubject } from '../../firebase/firestore';
+import SessionForm from '../../components/admin/SessionForm';
+import { getSessions, addSession, updateSession, deleteSession } from '../../firebase/firestore';
 
-export default function Subjects() {
+export default function Sessions() {
   const [sessions, setSessions] = useState([]);
-  const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [toast, setToast] = useState('');
 
   const load = async () => {
     setLoading(true);
-    const [sess, subj] = await Promise.all([getSessions(), getSubjects()]);
-    setSessions(sess);
-    setSubjects(subj);
+    const data = await getSessions();
+    setSessions(data);
     setLoading(false);
   };
 
@@ -26,22 +24,22 @@ export default function Subjects() {
   };
 
   const handleAdd = async (data) => {
-    await addSubject(data);
-    showToast('Subject added!');
+    await addSession(data);
+    showToast('Session added!');
     load();
   };
 
   const handleUpdate = async (data) => {
-    await updateSubject(editingId, data);
-    showToast('Subject updated!');
+    await updateSession(editingId, data);
+    showToast('Session updated!');
     setEditingId(null);
     load();
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this subject? Chapters and exams under it may break.')) return;
-    await deleteSubject(id);
-    showToast('Subject deleted!');
+    if (!confirm('Delete this session? Subjects under it may break.')) return;
+    await deleteSession(id);
+    showToast('Session deleted!');
     load();
   };
 
@@ -49,14 +47,14 @@ export default function Subjects() {
     <div>
       <AdminNav />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-6">Subjects</h1>
+        <h1 className="text-2xl font-bold text-slate-800 mb-2">Sessions (SSC / HSC)</h1>
+        <p className="text-slate-600 text-sm mb-6">Create sessions first, then add subjects under each session.</p>
 
         <div className="mb-6 p-4 bg-slate-50 rounded-lg">
-          <h2 className="text-sm font-medium text-slate-600 mb-3">Add Subject</h2>
-          <SubjectForm
-            sessions={sessions}
+          <h2 className="text-sm font-medium text-slate-600 mb-3">Add Session</h2>
+          <SessionForm
             onSubmit={editingId ? handleUpdate : handleAdd}
-            initialData={editingId ? subjects.find(s => s.id === editingId) : null}
+            initialData={editingId ? sessions.find(s => s.id === editingId) : null}
             onCancel={editingId ? () => setEditingId(null) : null}
           />
         </div>
@@ -71,12 +69,11 @@ export default function Subjects() {
           <div className="animate-spin w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto" />
         ) : (
           <div className="space-y-2">
-            {subjects.map(s => (
+            {sessions.map(s => (
               <div key={s.id} className="flex justify-between items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-50">
                 <div>
                   <span className="font-medium">{s.name}</span>
-                  <span className="text-slate-500 text-sm ml-2">— {sessions.find(sess => sess.id === s.sessionId)?.name || '-'}</span>
-                  <span className="text-slate-400 text-sm ml-2">order: {s.order}</span>
+                  <span className="text-slate-500 text-sm ml-2">({s.slug})</span>
                 </div>
                 <div className="flex gap-2">
                   <button

@@ -18,6 +18,7 @@ export default function AdminNav() {
             <Link to="/admin/dashboard" className="font-semibold hover:text-indigo-200">
               Proshno
             </Link>
+            <Link to="/admin/sessions" className="hover:text-indigo-200">Sessions</Link>
             <Link to="/admin/subjects" className="hover:text-indigo-200">Subjects</Link>
             <Link to="/admin/chapters" className="hover:text-indigo-200">Chapters</Link>
             <Link to="/admin/exams" className="hover:text-indigo-200">Exams</Link>

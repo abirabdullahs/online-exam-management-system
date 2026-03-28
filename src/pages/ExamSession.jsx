@@ -35,28 +35,32 @@ export default function ExamSession() {
     (async () => {
       const examData = await getExamByCode(examCode);
       if (!examData || cancelled) { navigate('/'); return; }
+      if (!examData.isPublished) { navigate('/'); return; }
       const allQ = await getQuestions(examData.id);
       const qs = allQ.slice(0, Math.min(questionCount, allQ.length));
       setExam(examData);
       setQuestions(qs);
 
       if (mode === 'exam') {
+        // ── FIXED: total time = selected questions × per-question time ──
+        const totalTime = questionCount * examData.defaultTimePerQuestion;
+
         const stored = sessionStorage.getItem(`${SESSION_KEY}_${examCode}`);
         if (stored) {
           try {
             const data = JSON.parse(stored);
             const elapsed = Math.floor((Date.now() - data.startTime) / 1000);
-            const remaining = Math.max(0, examData.totalTimeSeconds - elapsed);
+            const remaining = Math.max(0, totalTime - elapsed);
             setTimeLeft(remaining);
             setTimerStart(data.startTime);
             if (data.answers) setAnswers(data.answers);
             if (data.currentIndex != null) setCurrentIndex(Math.min(data.currentIndex, qs.length - 1));
           } catch {
-            setTimeLeft(examData.totalTimeSeconds);
+            setTimeLeft(totalTime);
             setTimerStart(Date.now());
           }
         } else {
-          setTimeLeft(examData.totalTimeSeconds);
+          setTimeLeft(totalTime);
           setTimerStart(Date.now());
           sessionStorage.setItem(`${SESSION_KEY}_${examCode}`, JSON.stringify({ startTime: Date.now(), answers: {}, currentIndex: 0 }));
         }

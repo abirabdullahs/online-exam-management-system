@@ -2,23 +2,29 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ExamCard from '../components/exam/ExamCard';
 import FilterBar from '../components/shared/FilterBar';
-import { getSubjects, getChapters, getExams } from '../firebase/firestore';
+import SessionModal, { getStoredSession } from '../components/shared/SessionModal';
+import { getSessions, getSubjects, getChapters, getExams } from '../firebase/firestore';
 
 export default function Home() {
   const [subjects, setSubjects] = useState([]);
   const [chapters, setChapters] = useState([]);
   const [exams, setExams] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [selectedSession, setSelectedSession] = useState(() => getStoredSession());
+  const [showSessionModal, setShowSessionModal] = useState(!getStoredSession());
   const [subjectFilter, setSubjectFilter] = useState('');
   const [chapterFilter, setChapterFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      const [s, c, e] = await Promise.all([
+      const [sess, s, c, e] = await Promise.all([
+        getSessions(),
         getSubjects(),
         getChapters(),
         getExams(true)
       ]);
+      setSessions(sess);
       setSubjects(s);
       setChapters(c);
       setExams(e);
@@ -27,7 +33,24 @@ export default function Home() {
     load();
   }, []);
 
+  const handleSessionSelect = (val) => {
+    setSelectedSession(val);
+    setShowSessionModal(false);
+  };
+
+  // Filter by session: exam -> subject -> subject.sessionId = session matching selected name
+  const sessionIdForSelected = sessions.find(s => s.name?.toUpperCase() === selectedSession)?.id;
   let filtered = exams;
+  if (selectedSession) {
+    if (sessionIdForSelected) {
+      filtered = filtered.filter(ex => {
+        const subj = subjects.find(s => s.id === ex.subjectId);
+        return subj?.sessionId === sessionIdForSelected;
+      });
+    } else {
+      filtered = []; // Selected SSC/HSC but no matching session in DB
+    }
+  }
   if (subjectFilter) filtered = filtered.filter(ex => ex.subjectId === subjectFilter);
   if (chapterFilter) filtered = filtered.filter(ex => ex.chapterId === chapterFilter);
 
@@ -36,6 +59,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ background: '#0a0a0f', fontFamily: "'Sora', sans-serif" }}>
+      {showSessionModal && (
+        <SessionModal onSelect={handleSessionSelect} />
+      )}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
         .nav-link { color: #888; transition: color 0.2s; font-size: 0.875rem; font-weight: 500; }
@@ -61,6 +87,15 @@ export default function Home() {
             <span style={{ fontWeight: 700, fontSize: '1.1rem', color: '#e2e8f0', letterSpacing: '-0.02em' }}>Proshno</span>
           </Link>
           <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            {selectedSession && (
+              <button
+                onClick={() => setShowSessionModal(true)}
+                className="nav-link"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit' }}
+              >
+                Switch session ({selectedSession})
+              </button>
+            )}
             <Link to="/" className="nav-link">Exams</Link>
             <Link to="/saved-results" className="nav-link">Saved Results</Link>
             <Link to="/admin" className="admin-btn">Admin</Link>
@@ -77,6 +112,11 @@ export default function Home() {
           </h1>
           <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
             Practice and sharpen your skills — unlimited attempts, instant results.
+            {selectedSession && (
+              <span style={{ marginLeft: '0.5rem', color: '#6366f1', fontWeight: 600 }}>
+                ({selectedSession})
+              </span>
+            )}
           </p>
           <div className="hero-line" />
         </div>

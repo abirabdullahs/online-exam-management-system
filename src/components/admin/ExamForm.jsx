@@ -23,9 +23,11 @@ export default function ExamForm({ subjects, chapters, onSubmit, initialData, on
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const selectedSubject = subjects.find(s => s.id === subjectId);
     onSubmit({
       subjectId,
       chapterId,
+      sessionId: selectedSubject?.sessionId,
       title,
       description,
       marksPerCorrect: Number(marksPerCorrect),

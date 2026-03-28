@@ -9,6 +9,7 @@ import SavedResults from './pages/SavedResults';
 
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
+import Sessions from './pages/admin/Sessions';
 import Subjects from './pages/admin/Subjects';
 import Chapters from './pages/admin/Chapters';
 import Exams from './pages/admin/Exams';
@@ -30,6 +31,9 @@ export default function App() {
         <Route path="/admin" element={<Login />} />
         <Route path="/admin/dashboard" element={
           <ProtectedRoute><Dashboard /></ProtectedRoute>
+        } />
+        <Route path="/admin/sessions" element={
+          <ProtectedRoute><Sessions /></ProtectedRoute>
         } />
         <Route path="/admin/subjects" element={
           <ProtectedRoute><Subjects /></ProtectedRoute>
