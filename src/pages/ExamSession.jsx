@@ -173,16 +173,24 @@ export default function ExamSession() {
         .submit-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 10px; padding: 0.55rem 1.1rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; white-space: nowrap; }
         .submit-btn:hover { opacity: 0.85; }
         .session-layout { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; min-height: calc(100vh - 72px); }
-        .session-sidebar { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.85rem 1rem; background: #0d0d14; overflow-x: auto; overflow-y: hidden; }
-        .questions-grid { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; grid-auto-columns: min-content; gap: 0.35rem; width: fit-content; }
+        .session-sidebar { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.85rem 1rem; background: #0d0d14; overflow-y: auto; overflow-x: hidden; max-height: 300px; }
+        .questions-grid { display: grid; grid-template-columns: repeat(3, 40px); gap: 0.35rem; width: fit-content; }
         .session-legend { display: flex; flex-direction: row; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap; }
         .session-main { flex: 1; padding: 1.25rem 1rem; max-width: 720px; width: 100%; }
+        @media (min-width: 640px) {
+          .questions-grid { grid-template-columns: repeat(4, 38px); }
+          .session-sidebar { max-height: 320px; }
+        }
         @media (min-width: 768px) {
-          .session-layout { flex-direction: row; }
-          .session-sidebar { width: 100%; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.05); border-right: none; padding: 0.85rem 1rem; min-height: auto; overflow-x: auto; overflow-y: hidden; }
-          .questions-grid { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; grid-auto-columns: min-content; gap: 0.35rem; width: fit-content; }
+          .session-layout { flex-direction: column; }
+          .session-sidebar { width: 100%; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.05); border-right: none; padding: 0.85rem 1rem; min-height: auto; overflow-y: auto; overflow-x: hidden; max-height: 320px; }
+          .questions-grid { display: grid; grid-template-columns: repeat(4, 38px); gap: 0.35rem; width: fit-content; }
           .session-legend { flex-direction: row; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap; display: flex; }
           .session-main { padding: 2rem 1.5rem; }
+        }
+        @media (min-width: 1024px) {
+          .questions-grid { grid-template-columns: repeat(6, 36px); }
+          .session-sidebar { max-height: 280px; }
         }
       `}</style>
 

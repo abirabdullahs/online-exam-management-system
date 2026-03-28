@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getExamByCode } from '../firebase/firestore';
+import { getExamByCode, getSubjects, getChapters } from '../firebase/firestore';
 
 export default function ExamEntry() {
   const { examCode } = useParams();
   const navigate = useNavigate();
   const [exam, setExam] = useState(null);
+  const [subject, setSubject] = useState(null);
+  const [chapter, setChapter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [questionCount, setQuestionCount] = useState('');
   const [attemptAll, setAttemptAll] = useState(false);
@@ -15,6 +17,19 @@ export default function ExamEntry() {
     async function load() {
       const e = await getExamByCode(examCode);
       setExam(e);
+      
+      if (e && e.subjectId) {
+        const subjects = await getSubjects();
+        const subj = subjects.find(s => s.id === e.subjectId);
+        setSubject(subj);
+      }
+      
+      if (e && e.chapterId) {
+        const chapters = await getChapters();
+        const chap = chapters.find(c => c.id === e.chapterId);
+        setChapter(chap);
+      }
+      
       setLoading(false);
     }
     load();
@@ -102,6 +117,20 @@ export default function ExamEntry() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#6366f1' }} />
               <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#818cf8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>MCQ Exam</span>
             </div>
+            
+            {/* Subject, Chapter breadcrumb */}
+            {(subject || chapter) && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#64748b', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+                {subject && (
+                  <>
+                    <span style={{ color: '#a5b4fc', fontWeight: 500 }}>{subject.name}</span>
+                    {chapter && <span style={{ color: '#475569' }}>•</span>}
+                  </>
+                )}
+                {chapter && <span style={{ color: '#9ca3af', fontWeight: 400 }}>{chapter.name}</span>}
+              </div>
+            )}
+            
             <h1 style={{ fontWeight: 700, fontSize: '1.25rem', color: '#e2e8f0', letterSpacing: '-0.02em', lineHeight: 1.3 }}>{exam.title}</h1>
             {exam.description && (
               <p style={{ color: '#64748b', fontSize: '0.85rem', marginTop: '0.35rem' }}>{exam.description}</p>
